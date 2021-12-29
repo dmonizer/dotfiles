@@ -9,8 +9,12 @@
 "
 " install required utils:
 " - sudo apt install fd-find
+
 "   for python code reformatting
-" - pip install autopep8   
+" - pip install autopep8
+
+"   for javascript linting
+" - sudo npm i eslint -g
 " copy this file to ~/.config/nvim/init.vim
 " run nvim (getting errors), exit, run again (still errors) 
 " type :PlugInstall
@@ -19,40 +23,6 @@
 " enjoy!
 " sourced partly from https://github.com/zyedidia/dotvim/blob/master/init.vim
 "
-filetype plugin indent on
-" show existing tab with 4 spaces width
-set tabstop=4
-" when indenting with '>', use 4 spaces width
-set shiftwidth=4
-" On pressing tab, insert 4 spaces
-set expandtab
-
-" :h hidden
-set hidden
-
-set showmatch         " Show matching braces
-set mat=1             " Set the time to show matching braces to 1 second
-set hlsearch          " switch on highlighting for the last used search pattern
-set showcmd           " Show the current command in the bottom right
-set number            " Show line numbers
-set autoindent        " Use autoindentation
-set wrap              " Wrap long lines
-set omnifunc=syntaxcomplete#Complete " Enable omnicompletion
-set autowrite         " Automatic save
-
-set backup
-if !isdirectory($HOME . "/.config/nvim/backup")
-    call mkdir($HOME . "/.config/nvim/backup", "p")
-endif
-set backupdir=~/.config/nvim/backup
-
-" saves undo information over restarts/closings
-set undofile
-
-"  'p' to paste, 'gv' to re-select what was originally selected. 'y' to copy it again.
-"  from: https://stackoverflow.com/questions/7163947/paste-multiple-times
-xnoremap p pgvy 
-
 call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
     let g:tern_request_timeout = 1
     let g:tern_request_timeout = 6000
@@ -61,7 +31,7 @@ call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
     " Docs https://github.com/neoclide/coc.nvim/blob/master/doc/coc.txt
     " https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    
+    Plug 'rebelot/kanagawa.nvim'
     " :CocList commands
     let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-css', 'coc-html', 'coc-json', 'coc-prettier', 'coc-snippets']  " list of CoC extensions needed
     " coc-prettier docs: https://prettier.io/docs/en/vim.html
@@ -96,14 +66,12 @@ call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
     Plug 'nvim-lua/popup.nvim'
 
     Plug 'neomake/neomake'
-call plug#end()
 
-let g:neomake_javascript_enabled_makers = ['eslint']
+call plug#end()
 
 syntax on 		" Turn on syntax highlighting
 
-" make nvim try to detect file types and load plugins for them
-filetype on
+filetype on " make nvim try to detect file types and load plugins for them
 filetype plugin on
 filetype indent on
 
@@ -120,12 +88,56 @@ set ruler               " Show the line and column numbers of the cursor.
 
 " if coc displays warning on startup on old version, and you cannot upgrade
 " for some reason, uncomment next line
+
 " let g:coc_disable_startup_warning = 1
 
 if &t_Co >= 256 || has("gui_running")
-    colorscheme landscape
-    set background=dark
+    colorscheme kanagawa
 endif
+
+filetype plugin indent on
+" show existing tab with 4 spaces width
+set tabstop=4
+" when indenting with '>', use 4 spaces width
+set shiftwidth=4
+" On pressing tab, insert 4 spaces
+set expandtab
+
+" :h hidden
+set hidden
+
+set showmatch         " Show matching braces
+set mat=1             " Set the time to show matching braces to 1 second
+set hlsearch          " switch on highlighting for the last used search pattern
+set showcmd           " Show the current command in the bottom right
+set number            " Show line numbers
+set autoindent        " Use autoindentation
+set wrap              " Wrap long lines
+set omnifunc=syntaxcomplete#Complete " Enable omnicompletion
+set autowrite         " Automatic save
+
+set backup
+if !isdirectory($HOME . "/.config/nvim/backup")
+    call mkdir($HOME . "/.config/nvim/backup", "p")
+endif
+set backupdir=~/.config/nvim/backup
+
+" saves undo information over restarts/closings
+set undofile
+
+"  'p' to paste, 'gv' to re-select what was originally selected. 'y' to copy it again.
+"  from: https://stackoverflow.com/questions/7163947/paste-multiple-times
+xnoremap p pgvy 
+
+
+let g:neomake_javascript_enabled_makers = ['eslint']
+call neomake#configure#automake('w') " When writing a buffer (no delay), and on normal mode changes (after 750ms).
+call neomake#configure#automake('nw', 750) " When reading a buffer (after 1s), and when writing (no delay).
+call neomake#configure#automake('rw', 1000) 
+" Full config: when writing or reading a buffer, and on changes in insert and
+" normal mode (after 500ms; no delay when writing).
+call neomake#configure#automake('nrwi', 500)
+let g:neomake_open_list = 2 " make Neomake to open the list automatically
 
 " key re-mappings
 " see https://vim.fandom.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)#Introduction
@@ -197,7 +209,7 @@ endif
 nnoremap <F9> :make %<CR>
 
 augroup runcommand
-    au BufEnter,BufNew *.js setlocal makeprg='npm start'
-    au BufEnter,BufNew *.py setlocal makeprg='python'
+    au BufEnter,BufNew *.js setlocal makeprg="npm start"
+    au BufEnter,BufNew *.py setlocal makeprg=python
 
 augroup END
