@@ -1,2 +1,2 @@
 #!/bin/sh
-ln -s ./neovim/init.vim ~/.config/nvim/init.vim
+ln -s  ${PWD}/neovim/init.vim ~/.config/nvim/ 
