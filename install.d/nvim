@@ -1,0 +1,39 @@
+#!/bin/bash
+NVIM_VERSION="9.7.0"
+TEMP_DIR=$(mktemp -d)
+OUT_FILE=$TEMP_DIR/nvim$NVIM_VERSION.deb
+
+info() {
+	echo "installs neovim $NVIM_VERSION"
+}
+
+install() {
+curl -o $OUT_FILE https://github.com/neovim/neovim/releases/download/v$NVIM_VERSION/nvim-linux64.deb 
+res=$?
+if test "$res" != "0"; then
+   echo "Neovim download FAIL"
+   exit 1
+fi
+
+dpkg-query -s neovim
+if test "$?" != "0"; then
+	sudo apt remove neovim*
+fi
+
+sudo apt install $OUT_FILE
+}
+
+inst() {
+	echo "ilog $LOGFILE"
+	
+	exit
+}
+
+if test "$1" == ""; then
+	info
+elif test "$#" -eq "2"; then
+	if test "$1" == "INSTALL"; then
+		LOGFILE=$2
+		inst
+	fi
+fi
