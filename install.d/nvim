@@ -8,6 +8,8 @@ info() {
 }
 
 install() {
+echo "[INFO] logging to $LOGFILE"
+	
 curl -o $OUT_FILE https://github.com/neovim/neovim/releases/download/v$NVIM_VERSION/nvim-linux64.deb 
 res=$?
 if test "$res" != "0"; then
@@ -21,13 +23,9 @@ if test "$?" != "0"; then
 fi
 
 sudo apt install $OUT_FILE
+exit
 }
 
-inst() {
-	echo "ilog $LOGFILE"
-	
-	exit
-}
 
 if test "$1" == ""; then
 	info
